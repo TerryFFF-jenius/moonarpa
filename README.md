@@ -28,7 +28,7 @@ import { "TerryFFF-jenius/moonarpa" @arpa }
 
 ## 快速开始
 
-以下代码可放入已有工程的可执行包；包设置 `options("is-main": true)`。
+以下代码可放入已有工程的可执行包；包设置 `pkgtype(kind: "executable")`。
 
 ```moonbit
 fn main raise {
