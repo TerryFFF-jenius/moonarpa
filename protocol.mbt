@@ -82,7 +82,8 @@ pub fn execute(
   if request.length() > limits.max_text {
     raise Budget("request text limit")
   }
-  let json = @json.parse(request, max_nesting_depth=16) catch {
+  check_json_depth(request)
+  let json = @json.parse(request) catch {
     _ => raise Invalid("invalid JSON request")
   }
   let fields = decode_object(json)
@@ -93,13 +94,13 @@ pub fn execute(
     ])
     let sentences = decode_sentences(required(fields, "sentences"), limits)
     let order = decode_int(required(fields, "order"))
-    let method = match fields.get("method") {
+    let training_method = match fields.get("method") {
       Some(v) => decode_string(v)
       None => "discount"
     }
     let prior = optional_double(fields, "unigram_prior", 0.5)
     let counts = count_corpus(sentences, order, limits~)
-    let model = match method {
+    let model = match training_method {
       "discount" =>
         counts.train_discount(
           discount=optional_double(fields, "discount", 0.75),
@@ -205,4 +206,34 @@ pub fn handle(request : String, limits~ : Limits = Limits::default()) -> String 
       ])
   }
   result.stringify()
+}
+
+///|
+fn check_json_depth(text : String) -> Unit raise ArpaError {
+  let mut depth = 0
+  let mut quoted = false
+  let mut escaped = false
+  for ch in text {
+    if quoted {
+      if escaped {
+        escaped = false
+      } else if ch == '\\' {
+        escaped = true
+      } else if ch == '"' {
+        quoted = false
+      }
+    } else if ch == '"' {
+      quoted = true
+    } else if ch == '[' || ch == '{' {
+      depth += 1
+      if depth > 16 {
+        raise Budget("JSON nesting limit")
+      }
+    } else if ch == ']' || ch == '}' {
+      depth -= 1
+      if depth < 0 {
+        raise Invalid("unbalanced JSON delimiters")
+      }
+    }
+  }
 }

@@ -29,7 +29,7 @@ pub fn SentenceScore::perplexity(self : SentenceScore) -> Double? {
 ///|
 fn add_log(a : Double, b : Double) -> Double raise ArpaError {
   let total = a + b
-  if !valid_log(total) {
+  if !valid_log(total) || (finite(a) && finite(b) && !finite(total)) {
     raise Invalid("log probability sum overflow")
   }
   total
@@ -86,7 +86,7 @@ pub fn Model::sentence(
     }
     results.push(score)
     history.push(score.mapped)
-    if history.length() > self.order - 1 {
+    while history.length() > self.order - 1 {
       let _ = history.remove(0)
     }
   }

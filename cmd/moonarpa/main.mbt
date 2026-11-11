@@ -4,6 +4,6 @@ fn main {
   if args.length() != 2 {
     println("MoonARPA: pass one JSON request argument; see docs/protocol.md")
   } else {
-    println(@moonarpa.handle(args[1]))
+    println(@arpa.handle(args[1]))
   }
 }

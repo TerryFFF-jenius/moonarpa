@@ -31,10 +31,14 @@ fn Limits::validate(self : Limits) -> Unit raise ArpaError {
   if self.max_order < 1 ||
     self.max_order > 8 ||
     self.max_records < 1 ||
+    self.max_records > 1000000 ||
     self.max_text < 1 ||
+    self.max_text > 256000000 ||
     self.max_tokens < 1 ||
-    self.max_work < 1 {
-    raise Invalid("limits must be positive; model order is at most eight")
+    self.max_tokens > 10000000 ||
+    self.max_work < 1 ||
+    self.max_work > 100000000 {
+    raise Invalid("limits outside supported integer-safe bounds")
   }
 }
 

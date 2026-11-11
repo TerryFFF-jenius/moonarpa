@@ -79,7 +79,7 @@ fn Scorer::accept(self : Scorer, token : String) -> TokenScore raise ArpaError {
     self.oovs += 1
   }
   self.history.push(score.mapped)
-  if self.history.length() > self.model.order - 1 {
+  while self.history.length() > self.model.order - 1 {
     let _ = self.history.remove(0)
   }
   score
@@ -133,6 +133,9 @@ pub fn Scorer::feed_batch(
 pub fn Scorer::finish(self : Scorer) -> SentenceScore raise ArpaError {
   if !self.closed {
     if self.options.eos {
+      if self.results.length() >= self.model.limits.max_tokens {
+        raise Budget("stream EOS token limit")
+      }
       let _ = self.accept("</s>")
     }
     self.closed = true

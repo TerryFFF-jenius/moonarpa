@@ -21,6 +21,9 @@ fn Model::map_token(
   token : String,
   policy : OovPolicy,
 ) -> String raise ArpaError {
+  if token.length() > self.limits.max_text {
+    raise Budget("scoring token text limit")
+  }
   if !token_valid(token) {
     raise Invalid("invalid scoring token")
   }
@@ -59,6 +62,16 @@ pub fn Model::conditional(
   if history.length() > self.limits.max_tokens {
     raise Budget("history token limit")
   }
+  let mut units = token.length()
+  if units > self.limits.max_text {
+    raise Budget("scoring text limit")
+  }
+  for h in history {
+    if h.length() > self.limits.max_text - units {
+      raise Budget("history text limit")
+    }
+    units += h.length()
+  }
   let mapped = self.map_token(token, oov)
   let context = []
   for h in suffix(history, self.order - 1) {
@@ -72,7 +85,12 @@ pub fn Model::conditional(
     match self.index.get(gram_key(query)) {
       Some(i) => {
         let probability = total_backoff + self.grams[i].log_probability
-        if !valid_log(probability) {
+        if !valid_log(probability) ||
+          (
+            finite(total_backoff) &&
+            finite(self.grams[i].log_probability) &&
+            !finite(probability)
+          ) {
           raise Invalid("backoff arithmetic overflow")
         }
         return {
@@ -91,8 +109,11 @@ pub fn Model::conditional(
         }
         match self.index.get(gram_key(context)) {
           Some(i) => {
-            total_backoff += self.grams[i].log_backoff.unwrap_or(0.0)
-            if !valid_log(total_backoff) {
+            let previous = total_backoff
+            let weight = self.grams[i].log_backoff.unwrap_or(0.0)
+            total_backoff += weight
+            if !valid_log(total_backoff) ||
+              (finite(previous) && finite(weight) && !finite(total_backoff)) {
               raise Invalid("backoff sum overflow")
             }
           }
