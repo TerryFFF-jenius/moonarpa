@@ -1,0 +1,5 @@
+import {
+  "TerryFFF-jenius/moonarpa" @arpa,
+}
+
+pkgtype(kind: "executable")
