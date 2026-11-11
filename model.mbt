@@ -40,9 +40,9 @@ pub fn Model::new(
     raise Budget("record limit")
   }
   let grams = []
-  let index : Map[String, Int32] = {}
+  let index : Map[String, Int32] = Map([])
   let vocabulary = []
-  let vocabulary_set : Map[String, Bool] = {}
+  let vocabulary_set : Map[String, Bool] = Map([])
   let mut units = 0
   for record in records {
     let size = record.tokens.length()
@@ -141,3 +141,9 @@ pub fn Model::counts(self : Model) -> Array[Int32] {
   }
   counts
 }
+
+///|
+pub extend Gram with @debug.Debug::{to_repr}
+
+///|
+pub extend Gram with Eq::{equal, not_equal}

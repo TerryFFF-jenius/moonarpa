@@ -112,3 +112,12 @@ fn positive_count(text : String, line : Int32) -> Int32 raise ArpaError {
   }
   value
 }
+
+///|
+pub extend ArpaError with @debug.Debug::{to_repr}
+
+///|
+pub extend Limits with @debug.Debug::{to_repr}
+
+///|
+pub extend Limits with Eq::{equal, not_equal}

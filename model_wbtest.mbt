@@ -39,7 +39,7 @@ test "model takes ownership and exposes defensive copies" {
   let records = m.records()
   records[0].tokens[0] = "changed"
   assert_true(m.contains("<s>"))
-  assert_true(m.record(["<s>"]).is_some())
+  assert_true(m.record(["<s>"]) is Some(_))
   let vocab = m.vocabulary()
   vocab.clear()
   assert_eq(m.vocabulary().length(), 5)
