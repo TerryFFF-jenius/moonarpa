@@ -6,6 +6,7 @@ pub struct Scorer {
   history : Array[String]
   results : Array[TokenScore]
   mut total : Double
+  mut text_units : Int32
   mut oovs : Int32
   mut closed : Bool
 }
@@ -31,6 +32,7 @@ pub fn Model::scorer(
     },
     results: [],
     total: 0.0,
+    text_units: 0,
     oovs: 0,
     closed: false,
   }
@@ -44,6 +46,7 @@ pub fn Scorer::fork(self : Scorer) -> Scorer {
     history: self.history.copy(),
     results: self.results.copy(),
     total: self.total,
+    text_units: self.text_units,
     oovs: self.oovs,
     closed: self.closed,
   }
@@ -71,10 +74,14 @@ pub fn Scorer::snapshot(self : Scorer) -> SentenceScore {
 
 ///|
 fn Scorer::accept(self : Scorer, token : String) -> TokenScore raise ArpaError {
+  if token.length() > self.model.limits.max_text - self.text_units {
+    raise Budget("stream cumulative text limit")
+  }
   let score = self.model.conditional(self.history, token, oov=self.options.oov)
   let total = add_log(self.total, score.log_probability)
   self.results.push(score)
   self.total = total
+  self.text_units += token.length()
   if score.oov {
     self.oovs += 1
   }
@@ -125,6 +132,7 @@ pub fn Scorer::feed_batch(
     self.results.push(result)
   }
   self.total = trial.total
+  self.text_units = trial.text_units
   self.oovs = trial.oovs
   self.snapshot()
 }
@@ -151,6 +159,7 @@ pub fn Scorer::reset(self : Scorer) -> Unit {
   }
   self.results.clear()
   self.total = 0.0
+  self.text_units = 0
   self.oovs = 0
   self.closed = false
 }
