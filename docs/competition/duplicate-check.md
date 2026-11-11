@@ -37,4 +37,12 @@ GitHub search/repositories：arpa language:MoonBit、kenlm language:MoonBit、ld
 
 ## 决策与边界
 
-2026-11-11 在登记表同目录 project-registry.md.lock 持有排他锁，重新读取后以临时文件原子替换登记 MoonARPA 并保留全部已有记录。新项目是原创实现；KenLM 用作参考行为和标注来源的测试数据，不拷贝引擎。实现前完成门禁，发布前重查核心术语和近邻版本。结论仅限已记录公开范围，不声称全生态唯一。
+2026-11-11 在登记表同目录 project-registry.md.lock 持有排他锁，重新读取后以临时文件原子替换登记 MoonARPA 并保留全部已有记录。新项目是原创实现；KenLM 用作参考行为及运行时读取的测试数据，不拷贝引擎。实现前完成门禁，发布前重查核心术语和近邻版本。结论仅限已记录公开范围，不声称全生态唯一。
+
+## 发布前复查（2026-11-11）
+
+再次执行 moon search limit100：arpa=0、kenlm=0、backoff=28、perplexity=3、ngram=8、score_sentence=4；GitHub arpa language:MoonBit per_page100 为0且 incomplete=false。逐条检查返回的接口简介，ngram 新近邻为布局图 NetworkSimplex、地理索引、record linkage 与 MinHash 分词；perplexity 还含 Perplexity 云厂商 SDK 与 t-SNE 参数，并非词级 ARPA 模型。score_sentence 还含文本指标、词嵌入检索和 npm 绑定。未把同名词命中直接视为重复。
+
+补读 cn-nnzy/mbglot HEAD 的 detect.mbt 与 detect_test.mbt：文本经过脚本/语言检测得到语言标签与置信度，测试含英语、西语、俄语、中文等识别，与词级条件似然不同。此补查是当前 HEAD，不冒充精确 0.2.0 内容。中文检索早期输出编码有局限；结论主要依赖可核对的英文任务/API、多近邻实际代码与测试。
+
+最终交付用三个带断言工作流兑现初始场景；训练/评分经过独立线性概率 oracle，ARPA 经固定 KenLM 测试输入与公开参考值对照。没有复制 KenLM 引擎或再发布其测试 fixture。有限公开范围内仍未确认成熟直接替代；广义 language model 查询曾饱和，不能证明全生态唯一。
