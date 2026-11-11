@@ -9,24 +9,18 @@ from run_request import invoke
 
 def parse_tables(arpa):
     tables = {}
+    order = 0
     for line in arpa.splitlines():
+        if line.startswith("\\") and line.endswith("-grams:"):
+            order = int(line[1:].split("-")[0])
+            continue
         fields = line.split()
-        if not fields or fields[0].startswith("\\") or fields[0] == "ngram":
+        if not order or not fields or fields[0].startswith("\\"):
             continue
-        try:
-            logp = float(fields[0])
-        except ValueError:
-            continue
-        words = []
-        for field in fields[1:]:
-            try:
-                backoff = float(field)
-                break
-            except ValueError:
-                words.append(field)
-        else:
-            backoff = 0.0
-        tables[tuple(words)] = (10.0 ** logp, 10.0 ** backoff)
+        logp = float(fields[0])
+        words = tuple(fields[1:order+1])
+        backoff = float(fields[order+1]) if len(fields) == order+2 else 0.0
+        tables[words] = (10.0 ** logp, 10.0 ** backoff)
     return tables
 
 
