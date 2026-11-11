@@ -1,0 +1,6 @@
+import {
+  "TerryFFF-jenius/moonarpa",
+  "moonbitlang/core/env",
+}
+
+pkgtype(kind: "executable")
