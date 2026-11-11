@@ -76,7 +76,7 @@ pub fn Model::score_lines(
   if text.length() > self.limits.max_text {
     raise Budget("corpus text limit")
   }
-  let lines = text.split("\n").map(line => words(line.to_string())).collect()
+  let lines = text.split("\n").map(line => words(line.to_owned())).collect()
   if text.has_suffix("\n") {
     let _ = lines.pop()
   }
