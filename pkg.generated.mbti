@@ -248,6 +248,7 @@ pub struct Scorer {
   history : Array[String]
   results : Array[TokenScore]
   mut total : Double
+  mut text_units : Int
   mut oovs : Int
   mut closed : Bool
 }
