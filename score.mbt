@@ -1,10 +1,12 @@
 ///|
+#derive(Debug, Eq)
 pub(all) enum OovPolicy {
   MapToUnknown
   Reject
-} derive(Debug, Eq)
+}
 
 ///|
+#derive(Debug, Eq)
 pub(all) struct TokenScore {
   token : String
   mapped : String
@@ -13,7 +15,7 @@ pub(all) struct TokenScore {
   backoff_steps : Int32
   backoff_log : Double
   oov : Bool
-} derive(Debug, Eq)
+}
 
 ///|
 fn Model::map_token(

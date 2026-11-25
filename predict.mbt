@@ -1,9 +1,10 @@
 ///|
+#derive(Debug, Eq)
 pub(all) struct Prediction {
   token : String
   log_probability : Double
   matched_order : Int32
-} derive(Debug, Eq)
+}
 
 ///|
 fn prediction_before(a : Prediction, b : Prediction) -> Bool {

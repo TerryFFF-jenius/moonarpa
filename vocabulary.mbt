@@ -1,8 +1,9 @@
 ///|
+#derive(Debug, Eq)
 pub(all) struct VocabularyOptions {
   min_count : Int32
   max_vocabulary : Int32
-} derive(Debug, Eq)
+}
 
 ///|
 pub fn VocabularyOptions::default() -> VocabularyOptions {
@@ -19,11 +20,12 @@ pub struct FittedVocabulary {
 }
 
 ///|
+#derive(Debug, Eq)
 pub(all) struct MappedCorpus {
   sentences : Array[Array[String]]
   tokens : Int32
   replaced : Int32
-} derive(Debug, Eq)
+}
 
 ///|
 /// Fit on training data only; reuse the resulting mapping for held-out data.

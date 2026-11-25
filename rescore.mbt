@@ -1,17 +1,19 @@
 ///|
+#derive(Debug, Eq)
 pub(all) struct Hypothesis {
   id : String
   tokens : Array[String]
   acoustic_score : Double
-} derive(Debug, Eq)
+}
 
 ///|
+#derive(Debug, Eq)
 pub(all) struct RescoreOptions {
   lm_weight : Double
   acoustic_weight : Double
   length_weight : Double
   scoring : ScoreOptions
-} derive(Debug, Eq)
+}
 
 ///|
 pub fn RescoreOptions::default() -> RescoreOptions {
@@ -24,12 +26,13 @@ pub fn RescoreOptions::default() -> RescoreOptions {
 }
 
 ///|
+#derive(Debug, Eq)
 pub(all) struct RankedHypothesis {
   id : String
   input_index : Int32
   score : Double
   language : SentenceScore
-} derive(Debug, Eq)
+}
 
 ///|
 fn finite_number(value : Double) -> Bool {

@@ -1,8 +1,9 @@
 ///|
+#derive(Debug, Eq)
 pub(all) struct CountGram {
   tokens : Array[String]
   count : Int32
-} derive(Debug, Eq)
+}
 
 ///|
 pub struct Counts {

@@ -1,4 +1,5 @@
 ///|
+#derive(Debug, Eq)
 pub(all) struct CorpusScore {
   sentences : Int32
   predicted : Int32
@@ -6,7 +7,7 @@ pub(all) struct CorpusScore {
   impossible : Int32
   log_probability : Double
   sentence_scores : Array[SentenceScore]
-} derive(Debug, Eq)
+}
 
 ///|
 pub fn CorpusScore::perplexity(self : CorpusScore) -> Double? {

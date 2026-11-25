@@ -3,12 +3,13 @@ package "TerryFFF-jenius/moonarpa"
 
 import {
   "moonbitlang/core/debug",
+  "moonbitlang/core/json",
 }
 
 // Values
-pub fn count_corpus(Array[Array[String]], Int, limits? : Limits) -> Counts raise ArpaError
+pub fn count_corpus(Array[Array[String]], Int32, limits? : Limits) -> Counts raise ArpaError
 
-pub fn execute(String, limits? : Limits) -> Json raise ArpaError
+pub fn execute(String, limits? : Limits) -> @json.Json raise ArpaError
 
 pub fn fit_vocabulary(Array[Array[String]], options? : VocabularyOptions, limits? : Limits) -> FittedVocabulary raise ArpaError
 
@@ -19,53 +20,56 @@ pub fn parse(String, limits? : Limits) -> Model raise ArpaError
 pub fn words(String) -> Array[String]
 
 // Errors
+#derive(@debug.Debug)
 pub(all) suberror ArpaError {
   Invalid(String)
   Budget(String)
   Missing(String)
-} derive(@debug.Debug)
+}
 pub fn ArpaError::to_repr(Self) -> @debug.Repr
 
 // Types and methods
+#derive(Eq, @debug.Debug)
 pub(all) struct CorpusScore {
-  sentences : Int
-  predicted : Int
-  oov_count : Int
-  impossible : Int
+  sentences : Int32
+  predicted : Int32
+  oov_count : Int32
+  impossible : Int32
   log_probability : Double
   sentence_scores : Array[SentenceScore]
-} derive(Eq, @debug.Debug)
+}
 pub fn CorpusScore::cross_entropy_bits(Self) -> Double?
 pub fn CorpusScore::equal(Self, Self) -> Bool
 pub fn CorpusScore::not_equal(Self, Self) -> Bool
 pub fn CorpusScore::oov_rate(Self) -> Double?
 pub fn CorpusScore::perplexity(Self) -> Double?
-pub fn CorpusScore::to_json(Self) -> Json
+pub fn CorpusScore::to_json(Self) -> @json.Json
 pub fn CorpusScore::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) struct CountGram {
   tokens : Array[String]
-  count : Int
-} derive(Eq, @debug.Debug)
+  count : Int32
+}
 pub fn CountGram::equal(Self, Self) -> Bool
 pub fn CountGram::not_equal(Self, Self) -> Bool
 pub fn CountGram::to_repr(Self) -> @debug.Repr
 
 pub struct Counts {
-  order : Int
+  order : Int32
   entries : Array[CountGram]
-  index : Map[String, Int]
-  sentences : Int
-  observed : Int
+  index : Map[String, Int32]
+  sentences : Int32
+  observed : Int32
   limits : Limits
 }
 pub fn Counts::continuations(Self, Array[String]) -> Array[CountGram] raise ArpaError
-pub fn Counts::count(Self, Array[String]) -> Int
+pub fn Counts::count(Self, Array[String]) -> Int32
 pub fn Counts::merge(Self, Self) -> Self raise ArpaError
-pub fn Counts::order(Self) -> Int
+pub fn Counts::order(Self) -> Int32
 pub fn Counts::records(Self) -> Array[CountGram]
-pub fn Counts::sentence_count(Self) -> Int
-pub fn Counts::token_count(Self) -> Int
+pub fn Counts::sentence_count(Self) -> Int32
+pub fn Counts::token_count(Self) -> Int32
 pub fn Counts::train_discount(Self, discount? : Double, unigram_prior? : Double) -> Model raise ArpaError
 pub fn Counts::train_mle(Self, unigram_prior? : Double) -> Model raise ArpaError
 pub fn Counts::vocabulary(Self) -> Array[String]
@@ -73,67 +77,72 @@ pub fn Counts::vocabulary(Self) -> Array[String]
 pub struct FittedVocabulary {
   words : Array[String]
   membership : Map[String, Bool]
-  training_tokens : Int
-  removed_types : Int
+  training_tokens : Int32
+  removed_types : Int32
   limits : Limits
 }
 pub fn FittedVocabulary::contains(Self, String) -> Bool
 pub fn FittedVocabulary::map_token(Self, String) -> String raise ArpaError
-pub fn FittedVocabulary::removed_types(Self) -> Int
-pub fn FittedVocabulary::training_tokens(Self) -> Int
+pub fn FittedVocabulary::removed_types(Self) -> Int32
+pub fn FittedVocabulary::training_tokens(Self) -> Int32
 pub fn FittedVocabulary::transform(Self, Array[Array[String]]) -> MappedCorpus raise ArpaError
 pub fn FittedVocabulary::words(Self) -> Array[String]
 
+#derive(Eq, @debug.Debug)
 pub(all) struct Gram {
   tokens : Array[String]
   log_probability : Double
   log_backoff : Double?
-} derive(Eq, @debug.Debug)
+}
 pub fn Gram::equal(Self, Self) -> Bool
 pub fn Gram::not_equal(Self, Self) -> Bool
 pub fn Gram::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) struct Hypothesis {
   id : String
   tokens : Array[String]
   acoustic_score : Double
-} derive(Eq, @debug.Debug)
+}
 pub fn Hypothesis::equal(Self, Self) -> Bool
 pub fn Hypothesis::not_equal(Self, Self) -> Bool
 pub fn Hypothesis::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) struct Limits {
-  max_order : Int
-  max_records : Int
-  max_text : Int
-  max_tokens : Int
-  max_work : Int
-} derive(Eq, @debug.Debug)
+  max_order : Int32
+  max_records : Int32
+  max_text : Int32
+  max_tokens : Int32
+  max_work : Int32
+}
 pub fn Limits::default() -> Self
 pub fn Limits::equal(Self, Self) -> Bool
 pub fn Limits::not_equal(Self, Self) -> Bool
 pub fn Limits::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) struct MappedCorpus {
   sentences : Array[Array[String]]
-  tokens : Int
-  replaced : Int
-} derive(Eq, @debug.Debug)
+  tokens : Int32
+  replaced : Int32
+}
 pub fn MappedCorpus::equal(Self, Self) -> Bool
 pub fn MappedCorpus::not_equal(Self, Self) -> Bool
 pub fn MappedCorpus::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) struct MassAudit {
   history : Array[String]
   mass : Double
   deviation : Double
   normalized : Bool
-  zero_events : Int
-  backed_off_events : Int
-} derive(Eq, @debug.Debug)
+  zero_events : Int32
+  backed_off_events : Int32
+}
 pub fn MassAudit::equal(Self, Self) -> Bool
 pub fn MassAudit::not_equal(Self, Self) -> Bool
-pub fn MassAudit::to_json(Self) -> Json
+pub fn MassAudit::to_json(Self) -> @json.Json
 pub fn MassAudit::to_repr(Self) -> @debug.Repr
 
 pub struct Mixture {
@@ -147,22 +156,22 @@ pub fn Mixture::sentence(Self, Array[String], options? : ScoreOptions) -> Senten
 pub fn Mixture::weights(Self) -> Array[Double]
 
 pub struct Model {
-  order : Int
+  order : Int32
   grams : Array[Gram]
-  index : Map[String, Int]
+  index : Map[String, Int32]
   vocabulary : Array[String]
   vocabulary_set : Map[String, Bool]
   limits : Limits
 }
-pub fn Model::audit_contexts(Self, Int, tolerance? : Double) -> Array[MassAudit] raise ArpaError
+pub fn Model::audit_contexts(Self, Int32, tolerance? : Double) -> Array[MassAudit] raise ArpaError
 pub fn Model::audit_mass(Self, Array[String], tolerance? : Double) -> MassAudit raise ArpaError
 pub fn Model::conditional(Self, Array[String], String, oov? : OovPolicy) -> TokenScore raise ArpaError
 pub fn Model::contains(Self, String) -> Bool
 pub fn Model::corpus(Self, Array[Array[String]], options? : ScoreOptions) -> CorpusScore raise ArpaError
-pub fn Model::counts(Self) -> Array[Int]
-pub fn Model::new(Int, Array[Gram], limits? : Limits) -> Self raise ArpaError
-pub fn Model::order(Self) -> Int
-pub fn Model::predict(Self, Array[String], Int, include_unknown? : Bool) -> Array[Prediction] raise ArpaError
+pub fn Model::counts(Self) -> Array[Int32]
+pub fn Model::new(Int32, Array[Gram], limits? : Limits) -> Self raise ArpaError
+pub fn Model::order(Self) -> Int32
+pub fn Model::predict(Self, Array[String], Int32, include_unknown? : Bool) -> Array[Prediction] raise ArpaError
 pub fn Model::rank_candidates(Self, Array[String], Array[String], oov? : OovPolicy) -> Array[Prediction] raise ArpaError
 pub fn Model::record(Self, Array[String]) -> Gram?
 pub fn Model::records(Self) -> Array[Gram]
@@ -171,72 +180,78 @@ pub fn Model::score_lines(Self, String, options? : ScoreOptions) -> CorpusScore 
 pub fn Model::score_text(Self, String, options? : ScoreOptions) -> SentenceScore raise ArpaError
 pub fn Model::scorer(Self, options? : ScoreOptions) -> Scorer raise ArpaError
 pub fn Model::sentence(Self, Array[String], options? : ScoreOptions) -> SentenceScore raise ArpaError
-pub fn Model::size(Self) -> Int
+pub fn Model::size(Self) -> Int32
 pub fn Model::summary(Self) -> ModelSummary
 pub fn Model::to_arpa(Self) -> String raise ArpaError
 pub fn Model::vocabulary(Self) -> Array[String]
 
+#derive(Eq, @debug.Debug)
 pub(all) struct ModelSummary {
-  order : Int
-  records : Int
-  vocabulary : Int
-  counts : Array[Int]
-  impossible_records : Int
-  positive_backoffs : Int
+  order : Int32
+  records : Int32
+  vocabulary : Int32
+  counts : Array[Int32]
+  impossible_records : Int32
+  positive_backoffs : Int32
   has_unknown : Bool
   has_bos : Bool
   has_eos : Bool
-} derive(Eq, @debug.Debug)
+}
 pub fn ModelSummary::equal(Self, Self) -> Bool
 pub fn ModelSummary::not_equal(Self, Self) -> Bool
-pub fn ModelSummary::to_json(Self) -> Json
+pub fn ModelSummary::to_json(Self) -> @json.Json
 pub fn ModelSummary::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) enum OovPolicy {
   MapToUnknown
   Reject
-} derive(Eq, @debug.Debug)
+}
 pub fn OovPolicy::equal(Self, Self) -> Bool
 pub fn OovPolicy::not_equal(Self, Self) -> Bool
 pub fn OovPolicy::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) struct Prediction {
   token : String
   log_probability : Double
-  matched_order : Int
-} derive(Eq, @debug.Debug)
+  matched_order : Int32
+}
 pub fn Prediction::equal(Self, Self) -> Bool
 pub fn Prediction::not_equal(Self, Self) -> Bool
-pub fn Prediction::to_json(Self) -> Json
+pub fn Prediction::to_json(Self) -> @json.Json
 pub fn Prediction::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) struct RankedHypothesis {
   id : String
-  input_index : Int
+  input_index : Int32
   score : Double
   language : SentenceScore
-} derive(Eq, @debug.Debug)
+}
 pub fn RankedHypothesis::equal(Self, Self) -> Bool
 pub fn RankedHypothesis::not_equal(Self, Self) -> Bool
-pub fn RankedHypothesis::to_json(Self) -> Json
+pub fn RankedHypothesis::to_json(Self) -> @json.Json
 pub fn RankedHypothesis::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) struct RescoreOptions {
   lm_weight : Double
   acoustic_weight : Double
   length_weight : Double
   scoring : ScoreOptions
-} derive(Eq, @debug.Debug)
+}
 pub fn RescoreOptions::default() -> Self
 pub fn RescoreOptions::equal(Self, Self) -> Bool
 pub fn RescoreOptions::not_equal(Self, Self) -> Bool
 pub fn RescoreOptions::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) struct ScoreOptions {
   bos : Bool
   eos : Bool
   oov : OovPolicy
-} derive(Eq, @debug.Debug)
+}
 pub fn ScoreOptions::default() -> Self
 pub fn ScoreOptions::equal(Self, Self) -> Bool
 pub fn ScoreOptions::not_equal(Self, Self) -> Bool
@@ -248,8 +263,8 @@ pub struct Scorer {
   history : Array[String]
   results : Array[TokenScore]
   mut total : Double
-  mut text_units : Int
-  mut oovs : Int
+  mut text_units : Int32
+  mut oovs : Int32
   mut closed : Bool
 }
 pub fn Scorer::feed(Self, String) -> TokenScore raise ArpaError
@@ -261,37 +276,40 @@ pub fn Scorer::is_closed(Self) -> Bool
 pub fn Scorer::reset(Self) -> Unit
 pub fn Scorer::snapshot(Self) -> SentenceScore
 
+#derive(Eq, @debug.Debug)
 pub(all) struct SentenceScore {
   log_probability : Double
-  predicted : Int
-  oov_count : Int
+  predicted : Int32
+  oov_count : Int32
   tokens : Array[TokenScore]
-} derive(Eq, @debug.Debug)
+}
 pub fn SentenceScore::cross_entropy_bits(Self) -> Double?
 pub fn SentenceScore::equal(Self, Self) -> Bool
 pub fn SentenceScore::not_equal(Self, Self) -> Bool
 pub fn SentenceScore::perplexity(Self) -> Double?
-pub fn SentenceScore::to_json(Self) -> Json
+pub fn SentenceScore::to_json(Self) -> @json.Json
 pub fn SentenceScore::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) struct TokenScore {
   token : String
   mapped : String
   log_probability : Double
-  matched_order : Int
-  backoff_steps : Int
+  matched_order : Int32
+  backoff_steps : Int32
   backoff_log : Double
   oov : Bool
-} derive(Eq, @debug.Debug)
+}
 pub fn TokenScore::equal(Self, Self) -> Bool
 pub fn TokenScore::not_equal(Self, Self) -> Bool
-pub fn TokenScore::to_json(Self) -> Json
+pub fn TokenScore::to_json(Self) -> @json.Json
 pub fn TokenScore::to_repr(Self) -> @debug.Repr
 
+#derive(Eq, @debug.Debug)
 pub(all) struct VocabularyOptions {
-  min_count : Int
-  max_vocabulary : Int
-} derive(Eq, @debug.Debug)
+  min_count : Int32
+  max_vocabulary : Int32
+}
 pub fn VocabularyOptions::default() -> Self
 pub fn VocabularyOptions::equal(Self, Self) -> Bool
 pub fn VocabularyOptions::not_equal(Self, Self) -> Bool

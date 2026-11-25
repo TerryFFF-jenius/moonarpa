@@ -1,10 +1,11 @@
 ///|
 /// A single ARPA record; probability and optional backoff use base-10 logarithms.
+#derive(Debug, Eq)
 pub(all) struct Gram {
   tokens : Array[String]
   log_probability : Double
   log_backoff : Double?
-} derive(Debug, Eq)
+}
 
 ///|
 fn Gram::owned(self : Gram) -> Gram {

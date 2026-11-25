@@ -1,9 +1,10 @@
 ///|
+#derive(Debug, Eq)
 pub(all) struct ScoreOptions {
   bos : Bool
   eos : Bool
   oov : OovPolicy
-} derive(Debug, Eq)
+}
 
 ///|
 pub fn ScoreOptions::default() -> ScoreOptions {
@@ -11,12 +12,13 @@ pub fn ScoreOptions::default() -> ScoreOptions {
 }
 
 ///|
+#derive(Debug, Eq)
 pub(all) struct SentenceScore {
   log_probability : Double
   predicted : Int32
   oov_count : Int32
   tokens : Array[TokenScore]
-} derive(Debug, Eq)
+}
 
 ///|
 pub fn SentenceScore::perplexity(self : SentenceScore) -> Double? {

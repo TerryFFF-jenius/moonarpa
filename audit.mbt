@@ -1,4 +1,5 @@
 ///|
+#derive(Debug, Eq)
 pub(all) struct MassAudit {
   history : Array[String]
   mass : Double
@@ -6,9 +7,10 @@ pub(all) struct MassAudit {
   normalized : Bool
   zero_events : Int32
   backed_off_events : Int32
-} derive(Debug, Eq)
+}
 
 ///|
+#derive(Debug, Eq)
 pub(all) struct ModelSummary {
   order : Int32
   records : Int32
@@ -19,7 +21,7 @@ pub(all) struct ModelSummary {
   has_unknown : Bool
   has_bos : Bool
   has_eos : Bool
-} derive(Debug, Eq)
+}
 
 ///|
 pub fn Model::summary(self : Model) -> ModelSummary {

@@ -1,19 +1,21 @@
 ///|
+#derive(Debug)
 pub(all) suberror ArpaError {
   Invalid(String)
   Budget(String)
   Missing(String)
-} derive(Debug)
+}
 
 ///|
 /// Limits apply before allocations or bounded inner loops.
+#derive(Debug, Eq)
 pub(all) struct Limits {
   max_order : Int32
   max_records : Int32
   max_text : Int32
   max_tokens : Int32
   max_work : Int32
-} derive(Debug, Eq)
+}
 
 ///|
 pub fn Limits::default() -> Limits {
