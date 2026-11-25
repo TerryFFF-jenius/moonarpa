@@ -23,7 +23,7 @@ jobs:
           python-version: '3.12'
       - name: Install pinned official MoonBit SDK
         env:
-          MOONBIT_INSTALL_VERSION: 0.10.19+97801ee1b
+          MOONBIT_INSTALL_VERSION: 0.10.22+124d61d05
         run: |
           curl --fail --location https://cli.moonbitlang.com/install/unix.sh -o /tmp/moonbit-install.sh
           bash /tmp/moonbit-install.sh
