@@ -12,7 +12,7 @@ MoonARPA 是纯 MoonBit 的词级 n-gram 语言模型库，提供 ARPA 模型读
 
 ## 环境与安装
 
-CI 与本轮 Windows 本机回归均固定使用稳定版 MoonBit `0.10.22+124d61d05`。支持 `wasm-gc`、`wasm`、`js`、`native`；native 需要平台 C 编译工具，Windows 需要 MSVC C++ 工具与 Windows SDK。无第三方模块依赖，使用官方 core。
+CI 固定并逐项核验以下工具链：Moon CLI `0.1.20261119`、编译器 moonc `0.10.22+124d61d05`、moonrun `0.1.20261119`。支持 `wasm-gc`、`wasm`、`js`、`native`；native 需要平台 C 编译工具，Windows 需要 MSVC C++ 工具与 Windows SDK。无第三方模块依赖，使用官方 core。MoonCakes 页面提供发布包与构建状态，但服务端构建器的工具链由平台管理，模块自身不能固定该服务端版本；平台公开元数据未显示其实际工具链版本。
 
 在已有 MoonBit 工程内执行：
 

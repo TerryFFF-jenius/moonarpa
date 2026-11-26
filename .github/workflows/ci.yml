@@ -30,7 +30,10 @@ jobs:
           echo "$HOME/.moon/bin" >> "$GITHUB_PATH"
       - name: Inspect source and interfaces
         run: |
-          moon version --all
+          moon version --all | tee /tmp/moon-version.txt
+          grep -Eq '^moon 0\.1\.20261119([[:space:]]|$)' /tmp/moon-version.txt
+          grep -Eq '^moonc v0\.10\.22\+124d61d05([[:space:]]|$)' /tmp/moon-version.txt
+          grep -Eq '^moonrun 0\.1\.20261119([[:space:]]|$)' /tmp/moon-version.txt
           moon update
           moon info
           moon fmt --check
