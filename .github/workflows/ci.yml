@@ -39,6 +39,7 @@ jobs:
           moon fmt --check
           git diff --exit-code
           python scripts/check_project.py
+          python -m unittest discover -s scripts -p "test_*.py"
       - name: Strict target validation and real workflows
         run: |
           moon check --deny-warn --target ${{ matrix.target }}

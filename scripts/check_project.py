@@ -17,7 +17,26 @@ def substantive(line):
     return bool(line) and not line.startswith(("//","pub extend")) and not re.fullmatch(r"[{}\[\](),;]+",line)
 
 
+def validate_release_metadata(manifest, readme, changelog):
+    names = re.findall(r'^name\s*=\s*"([^"\n]+)"\s*$', manifest, re.M)
+    versions = re.findall(r'^version\s*=\s*"([^"\n]+)"\s*$', manifest, re.M)
+    assert len(names) == len(versions) == 1, "ambiguous manifest identity/version"
+    module, version = names[0], versions[0]
+    documented = re.findall(re.escape(module) + r"@([0-9A-Za-z.+-]+)", readme)
+    assert len(documented) >= 2, "README must identify the module and installation version"
+    assert all(v == version for v in documented), ("README version mismatch", version, documented)
+    install = "moon add " + module + "@" + version
+    assert install in readme, "README installation command must use the current version"
+    headings = re.findall(r"^## ([0-9]+\.[0-9]+\.[0-9]+) .+$", changelog, re.M)
+    assert headings and headings[0] == version, "first CHANGELOG entry must match the manifest"
+
+
 def main():
+    validate_release_metadata(
+        (ROOT / "moon.mod").read_text(encoding="utf-8"),
+        (ROOT / "README.md").read_text(encoding="utf-8"),
+        (ROOT / "CHANGELOG.md").read_text(encoding="utf-8"),
+    )
     production = sorted(p for p in ROOT.glob("*.mbt") if not p.name.endswith(("_test.mbt","_wbtest.mbt")))
     physical = sum(len(p.read_text(encoding="utf-8").splitlines()) for p in production)
     useful = sum(sum(substantive(line) for line in p.read_text(encoding="utf-8").splitlines()) for p in production)

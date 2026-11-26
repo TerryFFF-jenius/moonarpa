@@ -1,6 +1,6 @@
 # MoonARPA
 
-MoonARPA 是纯 MoonBit 的词级 n-gram 语言模型库，提供 ARPA 模型读写、条件回退概率、句子与语料评分、候选重排和小语料训练。模块为 `TerryFFF-jenius/moonarpa@0.1.1`，不依赖网络服务和外部模型运行时。
+MoonARPA 是纯 MoonBit 的词级 n-gram 语言模型库，提供 ARPA 模型读写、条件回退概率、句子与语料评分、候选重排和小语料训练。模块为 `TerryFFF-jenius/moonarpa@0.1.3`，不依赖网络服务和外部模型运行时。
 
 ## 适用任务
 
@@ -17,7 +17,7 @@ CI 固定并逐项核验以下工具链：Moon CLI `0.1.20261119`、编译器 mo
 在已有 MoonBit 工程内执行：
 
 ```sh
-moon add TerryFFF-jenius/moonarpa@0.1.1
+moon add TerryFFF-jenius/moonarpa@0.1.3
 ```
 
 在使用者的 `moon.pkg` 中导入：
