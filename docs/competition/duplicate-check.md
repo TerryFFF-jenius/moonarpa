@@ -46,3 +46,13 @@ GitHub search/repositories：arpa language:MoonBit、kenlm language:MoonBit、ld
 补读 cn-nnzy/mbglot HEAD 的 detect.mbt 与 detect_test.mbt：文本经过脚本/语言检测得到语言标签与置信度，测试含英语、西语、俄语、中文等识别，与词级条件似然不同。此补查是当前 HEAD，不冒充精确 0.2.0 内容。中文检索早期输出编码有局限；结论主要依赖可核对的英文任务/API、多近邻实际代码与测试。
 
 最终交付用三个带断言工作流兑现初始场景；训练/评分经过独立线性概率 oracle，ARPA 经固定 KenLM 测试输入与公开参考值对照。没有复制 KenLM 引擎或再发布其测试 fixture。有限公开范围内仍未确认成熟直接替代；广义 language model 查询曾饱和，不能证明全生态唯一。
+
+## 2026-11-27 发布前语义复查
+
+按相同方法复查 arpa、ngram、kenlm、backoff、perplexity、language model，单词检索上限仍为100。结果分别2、9、0、31、5、100；最后一项饱和。GitHub 的 arpa language:MoonBit 仅检出本项目，ngram/kenlm/perplexity 组合未检出仓库；不把零命中视为唯一性证明。永久注册表相关指纹另作全文对照，原选题和能力边界不变。
+
+新增重点近邻是 [walkzzz/pinyin@0.8.0](https://mooncakes.io/docs/walkzzz/pinyin)（[源码](https://github.com/toadium/pinyin)，本轮读取 tree 12096d70fcb254707f16ec84d4ff9966ace07d37 的 lm/README.md、lm/pinyin_lm.mbt、lm/lm_test.mbt）。它确有 unigram/bigram/trigram 概率、平滑、句子概率与困惑度，与本项目在统计评分概念上部分重合，不能归为完全无关。实际接口以 PinyinLM 命名空间和词典预置拼音频率表为基础，面向拼音转换/消歧；已读源码与测试未提供任意外部词级 ARPA 模型导入/保真导出、八阶最长后缀回退或拥有型用户模型。MoonARPA 的核心任务仍是通用 ARPA 交换与可移植条件概率引擎，而非对拼音字典再包装。此判断仅限已读范围，不断言该仓库其它分支不存在相关功能。
+
+另外核对 [QuietlyChan/moonai](https://github.com/QuietlyChan/moonai) 的源码目录和 README（tree 04d4a8502a467b311065937d91ddd3d3499ca835）：它是统一远程模型服务商、消息、流和工具调用的 AI SDK，不是离线 ARPA 概率格式引擎；[PaperY0/pronouncing](https://github.com/PaperY0/pronouncing-MoonBit) 的 README 和目录（tree b8d578b486fa994839666a8248374b4c8b0f0503）处理 CMU 发音词典与 ARPABET/IPA，ARPA 名称相近但输入输出任务不同。本轮未安装运行近邻测试：pinyin 依赖下载超时后改以 GitHub API 读取源码/测试，故不声称其安装质量或测试结果。
+
+结论仍为：在明确记录的公开检索和已读源码范围内，未确认可直接替代本项目完整核心任务的成熟同类；有统计评分近邻，非全生态唯一或官方不重复认定。当前复查不构成重新选题，不为填补泛化能力而扩展实现。

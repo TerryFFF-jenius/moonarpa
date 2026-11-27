@@ -31,11 +31,28 @@ def validate_release_metadata(manifest, readme, changelog):
     assert headings and headings[0] == version, "first CHANGELOG entry must match the manifest"
 
 
+
+def validate_documented_toolchain(workflow, documents):
+    pins = re.findall(r"^\s*MOONBIT_INSTALL_VERSION:\s*([^\s]+)\s*$", workflow, re.M)
+    assert len(pins) == 1, "CI must declare one MoonBit compiler pin"
+    pin = pins[0]
+    assert re.fullmatch(r"[0-9]+\.[0-9]+\.[0-9]+\+[0-9a-f]+", pin), "invalid CI compiler pin"
+    for path, text in documents.items():
+        versions = re.findall(r"[0-9]+\.[0-9]+\.[0-9]+\+[0-9a-f]+", text)
+        assert versions, (path, "missing documented compiler version")
+        assert all(version == pin for version in versions), (path, "compiler version differs from CI", pin, versions)
+
+
 def main():
     validate_release_metadata(
         (ROOT / "moon.mod").read_text(encoding="utf-8"),
         (ROOT / "README.md").read_text(encoding="utf-8"),
         (ROOT / "CHANGELOG.md").read_text(encoding="utf-8"),
+    )
+    validate_documented_toolchain(
+        (ROOT / ".github/workflows/ci.yml").read_text(encoding="utf-8"),
+        {name: (ROOT / name).read_text(encoding="utf-8")
+         for name in ("README.md", "docs/validation.md")},
     )
     production = sorted(p for p in ROOT.glob("*.mbt") if not p.name.endswith(("_test.mbt","_wbtest.mbt")))
     physical = sum(len(p.read_text(encoding="utf-8").splitlines()) for p in production)
@@ -60,11 +77,11 @@ def main():
     assert meaningful >= 20, ("nontrivial commits",meaningful)
     # Size alone cannot establish engineering value; docs list the reviewed slices.
     required = ["README.md","LICENSE","THIRD_PARTY.md","SECURITY.md","CHANGELOG.md",
-                "docs/design.md","docs/protocol.md","docs/competition/duplicate-check.md",
+                "docs/design.md","docs/protocol.md","docs/validation.md","docs/competition/duplicate-check.md",
                 "pkg.generated.mbti",".github/workflows/ci.yml"]
     for name in required:
         assert (ROOT/name).is_file(),name
-    for path in [ROOT/"README.md",ROOT/"docs/design.md",ROOT/"docs/protocol.md"]:
+    for path in [ROOT/"README.md",ROOT/"docs/design.md",ROOT/"docs/protocol.md",ROOT/"docs/validation.md"]:
         text = path.read_text(encoding="utf-8")
         assert not re.search(r"\bTODO\b|\bTBD\b|\{\{[A-Z_]",text),path
         for target in re.findall(r"\]\(([^)]+)\)",text):

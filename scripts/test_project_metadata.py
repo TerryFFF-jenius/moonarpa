@@ -1,7 +1,7 @@
 """Regression tests for release documentation drift."""
 import unittest
 
-from check_project import validate_release_metadata
+from check_project import validate_release_metadata, validate_documented_toolchain
 
 
 class ReleaseMetadataTests(unittest.TestCase):
@@ -27,6 +27,47 @@ class ReleaseMetadataTests(unittest.TestCase):
     def test_missing_install_command(self):
         with self.assertRaisesRegex(AssertionError, "installation command"):
             validate_release_metadata(self.manifest, self.readme.replace("moon add", "install"), self.changelog)
+
+
+
+class ToolchainDocumentationTests(unittest.TestCase):
+    workflow = "env:\n  MOONBIT_INSTALL_VERSION: 0.10.22+124d61d05\n"
+    documents = {
+        "README.md": "moonc 0.10.22+124d61d05",
+        "docs/validation.md": "moonc 0.10.22+124d61d05",
+    }
+
+    def test_consistent_toolchain(self):
+        validate_documented_toolchain(self.workflow, self.documents)
+
+    def test_stale_validation_document(self):
+        documents = dict(self.documents, **{"docs/validation.md": "moonc 0.10.15+943464bfa"})
+        with self.assertRaisesRegex(AssertionError, "differs from CI"):
+            validate_documented_toolchain(self.workflow, documents)
+
+    def test_stale_readme(self):
+        documents = dict(self.documents, **{"README.md": "moonc 0.10.19+2edd3f5fa"})
+        with self.assertRaisesRegex(AssertionError, "differs from CI"):
+            validate_documented_toolchain(self.workflow, documents)
+
+    def test_mixed_old_and_current_versions(self):
+        documents = dict(self.documents, **{"docs/validation.md": "moonc 0.10.22+124d61d05; 0.10.15+943464bfa"})
+        with self.assertRaisesRegex(AssertionError, "differs from CI"):
+            validate_documented_toolchain(self.workflow, documents)
+
+    def test_missing_documented_version(self):
+        with self.assertRaisesRegex(AssertionError, "missing documented compiler"):
+            validate_documented_toolchain(self.workflow, {"README.md": "MoonBit"})
+
+    def test_missing_or_duplicate_ci_pin(self):
+        for workflow in ["env: {}", self.workflow + self.workflow]:
+            with self.subTest(workflow=workflow):
+                with self.assertRaisesRegex(AssertionError, "one MoonBit compiler pin"):
+                    validate_documented_toolchain(workflow, self.documents)
+
+    def test_invalid_ci_pin(self):
+        with self.assertRaisesRegex(AssertionError, "invalid CI compiler pin"):
+            validate_documented_toolchain(self.workflow.replace("0.10.22+124d61d05", "latest"), self.documents)
 
 
 if __name__ == "__main__":
